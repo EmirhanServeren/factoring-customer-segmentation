@@ -28,15 +28,18 @@ cek_color_df = visualization_df[['MUSTERI_ID','CEK_RENK']]
 cek_color_df = cek_color_df['CEK_RENK'].value_counts()
 
 # count number of customers (MUSTERI)
+# printing as metric with streamlit
 customer_number = visualization_df[['MUSTERI_ID']]
 customer_number = customer_number.drop_duplicates()
 #customer_number.size
 
-# rename page name
-st.set_page_config(page_title="Analytics Page")
+# -----------------------------------------
+# STARTING WEB-APP RELATED PARTS AFTER HERE
+# -----------------------------------------
 
-# create header for page
-st.header("Customer Reports-Analytics")
+# rename page name and set layout wider
+st.set_page_config(page_title="Analytics Reporting",layout="wide")
+st.header("Customer Reports-Analytics")     # create header for page
 
 # create sidebar and other sub-page components here
 st.sidebar.title("Customer Segmentation Capstone Project Web-App")
@@ -49,7 +52,20 @@ Maecenas aliquam ultrices placerat. Etiam venenatis odio ac nisl finibus blandit
 In sagittis semper ligula, et pretium quam rutrum eget. Nullam vel ullamcorper risus.
 Vestibulum hendrerit ante diam, a ultrices ipsum posuere id."""
 
+# putting a context at first
 st.write(dummy_text)
-st.write(f"{str(customer_number.size)} müşteri bulunmaktadır")
-st.bar_chart(companyType_df)
-st.bar_chart(cek_color_df)
+
+# create column containers of web page
+col_up1,col_up2,col_up3=st.columns(3, gap="large")
+# filling the containers
+col_up1.write(dummy_text)
+col_up2.subheader("Şirket Türüne göre Müşteri Dağılımı")
+col_up2.bar_chart(companyType_df)
+col_up3.metric(label="Verisetindeki müşteri sayısı", value=str(customer_number.size))
+
+# creating tabs to navigate between charts of SIRKET_TURU T and G
+tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
+with tabT:
+    st.header("Tüzel Şirketler")
+with tabG:
+    st.header("Şahıs Şirketleri")
