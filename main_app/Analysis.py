@@ -1,6 +1,7 @@
 # importing streamlit framework for deploying web-app
 import streamlit as st
-
+# for altair charts in streamlit library
+import altair as alt
 # importing libraries for data analysis
 import pandas as pd
 import numpy as np
@@ -24,18 +25,21 @@ companyType_df = companyType_df.drop_duplicates()
 companyType_df = companyType_df['SIRKET_TURU'].value_counts()
 
 # create visualization for çek renk
-cek_color_df = visualization_df[['MUSTERI_ID','CEK_RENK']]
+cek_color_df = visualization_df[['CEK_RENK']]
 cek_color_df = cek_color_df['CEK_RENK'].value_counts()
 
-# count number of customers (MUSTERI)
-# printing as metric with streamlit
+# count number of MUSTERI and KESIDECI-> printing as metric with streamlit
 customer_number = visualization_df[['MUSTERI_ID']]
-customer_number = customer_number.drop_duplicates()
-#customer_number.size
+customer_number = customer_number.drop_duplicates()     #customer_number.size
 
-# -----------------------------------------
-# STARTING WEB-APP RELATED PARTS AFTER HERE
-# -----------------------------------------
+kesideci_number = visualization_df[['KESIDECI_ID']]
+kesideci_number = kesideci_number.drop_duplicates()     #kesideci_number.size
+
+
+# ----------------------------------------------
+#   STARTING WEB-APP RELATED PARTS AFTER HERE
+# ----------------------------------------------
+
 
 # rename page name and set layout wider
 st.set_page_config(page_title="Analytics Reporting",layout="wide")
@@ -57,11 +61,21 @@ st.write(dummy_text)
 
 # create column containers of web page
 col_up1,col_up2,col_up3=st.columns(3, gap="large")
+
 # filling the containers
-col_up1.write(dummy_text)
+col_up1.write(dummy_text)   # left column
+# middle column
 col_up2.subheader("Şirket Türüne göre Müşteri Dağılımı")
 col_up2.bar_chart(companyType_df)
+# right column
+col_up3.metric(label="Verisetindeki girdi sayısı", value=str(visualization_df['MUSTERI_ID'].size))
 col_up3.metric(label="Verisetindeki müşteri sayısı", value=str(customer_number.size))
+col_up3.metric(label="Verisetindeki keşideci sayısı", value=str(kesideci_number.size))
+
+# create another column containers of web page
+col_down1,col_down2=st.columns(2, gap="large")
+col_down1.bar_chart(cek_color_df)
+col_down2.write(dummy_text)
 
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
