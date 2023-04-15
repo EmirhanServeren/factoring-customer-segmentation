@@ -5,6 +5,9 @@ import altair as alt
 # importing libraries for data analysis
 import pandas as pd
 import numpy as np
+# importing to visualization where streamlit is not enough
+import matplotlib.pyplot as plt
+import plotly.express as px
 
 import pyodbc           # importing for connecting to database
 import json             # for reading the key inside the json formatted file
@@ -16,7 +19,7 @@ cnxn = pyodbc.connect(sql_key['key'])       # establish a connection
 crsr = cnxn.cursor()                        # cursor enables to send command
 
 # query for selecting necessary columns
-viz_query= """SELECT MUSTERI_ID, KESIDECI_ID, CEK_NO, SIRKET_TURU, CEK_TUTAR, CEK_RENK FROM dbo.dataset """
+viz_query= """SELECT MUSTERI_ID, KESIDECI_ID, CEK_NO, SIRKET_TURU, CEK_TUTAR, CEK_RENK, ISTIHBARAT_SONUC, MUSTERI_RISK_SEVIYESI FROM dbo.dataset """
 visualization_df = pd.read_sql(viz_query, cnxn)
 
 # create visualization for T/G type of companies
@@ -34,6 +37,26 @@ customer_number = customer_number.drop_duplicates()     #customer_number.size
 
 kesideci_number = visualization_df[['KESIDECI_ID']]
 kesideci_number = kesideci_number.drop_duplicates()     #kesideci_number.size
+
+# visualize "istihbarat sonucu"
+# ...and make it a filter based on CEK_RENK
+istihbarat_df=visualization_df[['CEK_NO','SIRKET_TURU','CEK_RENK','ISTIHBARAT_SONUC']]
+istihbarat_df= istihbarat_df.drop_duplicates(subset='CEK_NO', keep="first")
+#istihbarat_df= istihbarat_df['ISTIHBARAT_SONUC'].value_counts()
+
+# VISUALIZATIONS-RELATED TO BK TAB (ŞAHIS TAB)
+# query related attributes by filtering SIRKET_TURU as G (şahıs)
+bk_query= """SELECT MUSTERI_ID, CEK_NO, BK_GECIKMEHESAP, 'BK_GECIKMEBAKIYE', BK_LIMIT, BK_RISK, BK_NOTU
+                FROM dbo.dataset WHERE SIRKET_TURU LIKE 'G' """
+visualization_bk_df = pd.read_sql(bk_query, cnxn)
+
+sample_bk=visualization_bk_df.sample(n=1000)
+# scatter the limit by risk
+scatter_bklimitrisk = px.scatter(
+    sample_bk[['BK_LIMIT','BK_RISK']],
+    x="BK_LIMIT",
+    y="BK_RISK",
+)
 
 
 # ----------------------------------------------
@@ -65,7 +88,7 @@ col_up1,col_up2,col_up3=st.columns(3, gap="large")
 # filling the containers
 col_up1.write(dummy_text)   # left column
 # middle column
-col_up2.subheader("Şirket Türüne göre Müşteri Dağılımı")
+col_up2.subheader("Şirket Türüne göre Dağılımı")
 col_up2.bar_chart(companyType_df)
 # right column
 col_up3.metric(label="Verisetindeki girdi sayısı", value=str(visualization_df['MUSTERI_ID'].size))
@@ -74,12 +97,26 @@ col_up3.metric(label="Verisetindeki keşideci sayısı", value=str(kesideci_numb
 
 # create another column containers of web page
 col_down1,col_down2=st.columns(2, gap="large")
+col_down1.subheader("Veri setindeki Çek Renklerinin Dağılımı")
 col_down1.bar_chart(cek_color_df)
+col_down1.write(" Çek rengi KKB tarafından bankalara aktarılan bir bilgidir. Açık Yeşilden Siyaha sıralanmıştır. Açık Yeşil kredibilitesi en yüksek çektir, siyaha geçtikçe çekin kredibilitesi düşmektedir.")
 col_down2.write(dummy_text)
+cek_color_dropdown=col_down2.selectbox("çek rengi seçiniz",cek_color_df.index.tolist())
+col_down2.subheader("Çeklerin İstihbarat Sonuçları")
+col_down2.bar_chart(istihbarat_df['ISTIHBARAT_SONUC'].value_counts())
+
+# THIS PART WILL BE COMPLETED SOON!
+# show istihbarat sonuc by filter result, evolve it into bar chart next
+st.write("Filtreli-Çeklerin İstihbarat Sonuçları")
+st.dataframe(
+    istihbarat_df[['ISTIHBARAT_SONUC','CEK_RENK']].loc[istihbarat_df['CEK_RENK']==cek_color_dropdown])
 
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
 with tabT:
     st.header("Tüzel Şirketler")
+    st.write(dummy_text)
 with tabG:
     st.header("Şahıs Şirketleri")
+    st.plotly_chart(scatter_bklimitrisk, theme=None, use_container_width=True)
+    st.write(dummy_text)
