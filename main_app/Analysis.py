@@ -12,7 +12,7 @@ import plotly.express as px
 import pyodbc           # importing for connecting to database
 import json             # for reading the key inside the json formatted file
 
-f = open('log.json')        # connection string to the database is available on the json file
+f = open('log.json')        # connection string to the database is available on the json file (but ignored in Github)
 sql_key = json.load(f)      # returns JSON object as a dictionary
 
 cnxn = pyodbc.connect(sql_key['key'])       # establish a connection
@@ -101,21 +101,15 @@ col_down1.subheader("Veri setindeki Çek Renklerinin Dağılımı")
 col_down1.bar_chart(cek_color_df)
 col_down1.write(" Çek rengi KKB tarafından bankalara aktarılan bir bilgidir. Açık Yeşilden Siyaha sıralanmıştır. Açık Yeşil kredibilitesi en yüksek çektir, siyaha geçtikçe çekin kredibilitesi düşmektedir.")
 col_down2.write(dummy_text)
-cek_color_dropdown=col_down2.selectbox("çek rengi seçiniz",cek_color_df.index.tolist())
+#cek_color_dropdown=col_down2.selectbox("çek rengi seçiniz",cek_color_df.index.tolist())
 col_down2.subheader("Çeklerin İstihbarat Sonuçları")
 col_down2.bar_chart(istihbarat_df['ISTIHBARAT_SONUC'].value_counts())
-
-# THIS PART WILL BE COMPLETED SOON!
-# show istihbarat sonuc by filter result, evolve it into bar chart next
-st.write("Filtreli-Çeklerin İstihbarat Sonuçları")
-st.dataframe(
-    istihbarat_df[['ISTIHBARAT_SONUC','CEK_RENK']].loc[istihbarat_df['CEK_RENK']==cek_color_dropdown])
 
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
 with tabT:
     st.header("Tüzel Şirketler")
-    st.write(dummy_text)
+    st.write(dummy_text)   # dummy text for now
 with tabG:
     st.header("Şahıs Şirketleri")
     st.plotly_chart(scatter_bklimitrisk, theme=None, use_container_width=True)
