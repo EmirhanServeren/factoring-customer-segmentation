@@ -39,9 +39,9 @@ cek_color_df = cek_color_df['CEK_RENK'].value_counts()
 cek_renk_label_mapping = {'Ayesil': 'Açık Yeşil','Yesil':'Yeşil','Asari': 'Açık Sarı','Sari':'Sarı',
         'Turuncu':'Turuncu','Mor':'Mor','Kirmizi':'Kırmızı','Siyah':'Siyah'}
 cek_color_df = cek_color_df.rename(index=cek_renk_label_mapping)     # rename the labels using the mapping dictionary
-
-cek_renk_order = ['Açık Yeşil', 'Yeşil', 'Açık Sarı', 'Sarı', 'Turuncu', 'Mor', 'Kırmızı', 'Siyah']
-cek_color_df = cek_color_df.reindex(cek_renk_order)     # reindex the labels in the desired order by the list
+# reindex the labels in the desired order by using the list
+cek_renk_order = ['Siyah', 'Kırmızı', 'Mor', 'Turuncu', 'Sarı', 'Açık Sarı', 'Yeşil', 'Açık Yeşil']
+cek_color_df = cek_color_df.reindex(cek_renk_order)
 
 # count number of MUSTERI and KESIDECI-> printing as metric with streamlit
 customer_number = visualization_df[['MUSTERI_ID']]
@@ -53,7 +53,7 @@ kesideci_number = kesideci_number.drop_duplicates()     #kesideci_number.size
 # visualize "istihbarat sonucu"
 # ...and make it a filter based on CEK_RENK
 istihbarat_df=visualization_df[['CEK_NO','SIRKET_TURU','CEK_RENK','ISTIHBARAT_SONUC']]
-istihbarat_df= istihbarat_df.drop_duplicates(subset='CEK_NO', keep="first")
+istihbarat_df= istihbarat_df.drop_duplicates(subset='CEK_NO', keep="first")         # drop duplicates
 
 # VISUALIZATIONS-RELATED TO BK TAB (Gerçek Kişiler TAB)
 # query related attributes by filtering SIRKET_TURU as G (şahıs)
@@ -61,7 +61,7 @@ bk_query= """SELECT MUSTERI_ID, CEK_NO, BK_GECIKMEHESAP, 'BK_GECIKMEBAKIYE', BK_
                 FROM dbo.dataset WHERE SIRKET_TURU LIKE 'G' """
 visualization_bk_df = pd.read_sql(bk_query, cnxn)
 
-sample_bk=visualization_bk_df.sample(n=1000)
+sample_bk=visualization_bk_df.sample(n=1000)    # there is envy amount of data so using a sample
 # scatter the limit by risk for G type customers
 scatter_bklimitrisk = px.scatter(
     sample_bk[['BK_LIMIT','BK_RISK']],
@@ -117,12 +117,17 @@ col_up1,col_up2,col_up3=st.columns(3, gap="large")
 col_up1.write(dummy_text)   # left column
 # middle column
 col_up2.subheader("Şirket Türüne Göre Dağılım")
-figure_companyType = go.Figure(data=[go.Pie(labels=companyType_df.index, values=companyType_df.values)])       # create the donut chart
-figure_companyType.update_traces(hole=0.4)                                                # set the hole size for the donut chart (0.6 for a smaller hole)
+# this part stand for adjusting tooltip for donut chart
+labels = companyType_df.index
+values = companyType_df.values
+hovertemplate_company = "%{label} kişilerde %{value} çek kaydı bulunmaktadır<extra></extra>"
+figure_companyType = go.Figure(data=[go.Pie(labels=labels, values=values, hovertemplate=hovertemplate_company,
+        hoverlabel=dict(align='left', font=dict(size=12)))])                              # create a donut chart
+figure_companyType.update_traces(hole=0.4)                                                # set the hole size for the donut chart
 figure_companyType.update_layout(legend=dict(orientation="h", yanchor="bottom",
                             y=1.02, xanchor="center", x=0.5))                             # adjust location of color legend for better visualization
 col_up2.plotly_chart(figure_companyType, use_container_width=True)                        # render the chart for streamlit
-# right column
+# right column- metrices are declared here
 col_up3.metric(label="Verisetindeki girdi sayısı", value=str(visualization_df['MUSTERI_ID'].size))
 col_up3.metric(label="Verisetindeki müşteri sayısı", value=str(customer_number.size))
 col_up3.metric(label="Verisetindeki keşideci sayısı", value=str(kesideci_number.size))
@@ -130,21 +135,33 @@ col_up3.metric(label="Verisetindeki keşideci sayısı", value=str(kesideci_numb
 # create another column containers of web page
 col_down1,col_down2=st.columns(2, gap="large")
 col_down1.subheader("Veri setindeki Çek Renkleri Sarı Ağırlıklı")
-cek_color_fig = go.Figure(data=[go.Bar(x=cek_color_df,y=cek_color_df.index,orientation='h')])    # creating the horizontal bar chart
-cek_color_fig.update_layout(xaxis_title="Çek Miktarı",yaxis_title="Çek Rengi")                          # set the chart axis labels
-col_down1.plotly_chart(cek_color_fig, use_container_width=True)                                         # render the chart for streamlit
-
 col_down1.write(" Çek rengi KKB tarafından bankalara aktarılan bir bilgidir. Açık Yeşilden Siyaha sıralanmıştır. Açık Yeşil kredibilitesi en yüksek çektir, siyaha geçtikçe çekin kredibilitesi düşmektedir.")
 
+cek_renk_color_palette=['#FFFFAD', '#FFFF99', '#FFFF85', '#FFFF70', '#FFFF5C', '#FFFF47', '#FFFF33', '#FFFF1F']
+cek_color_fig = go.Figure(data=[go.Bar(x=cek_color_df,y=cek_color_df.index,orientation='h',
+                    marker=dict(color=cek_renk_color_palette),
+                    text=cek_color_df, textposition='auto', hoverinfo='none')])                         # creating the horizontal bar chart
+cek_color_fig.update_layout(xaxis_title="Çek Miktarı",yaxis_title=None)                                 # set the chart axis labels
+col_down1.plotly_chart(cek_color_fig, use_container_width=True)                                         # render the chart for streamlit
+
 col_down2.write(dummy_text)
-col_down2.subheader("Çeklerin İstihbarat Sonuçları")
-col_down2.bar_chart(istihbarat_df['ISTIHBARAT_SONUC'].value_counts())
+col_down2.subheader("Çeklerin Şirket Türüne Göre İstihbarat Sonuçları")
+# creating stacked bar chart for ISTIHBARAT_SONUC with respect to the company type
+istihbarat_df_counts = istihbarat_df.groupby(['ISTIHBARAT_SONUC', 'SIRKET_TURU']).size().unstack().fillna(0)
+colors_istihbaratChart = ['#FF4747', '#FF1F1F']         # defining custom colors for each category on the stacked bar chart
+istihbarat_bar_chart = go.Figure(data=[
+    go.Bar(name='Tüzel', x=istihbarat_df_counts.index, y=istihbarat_df_counts['T'], text=istihbarat_df_counts['T'],
+                textposition='auto', marker=dict(color=colors_istihbaratChart[0]), hoverinfo='none'),
+    go.Bar(name='Gerçek', x=istihbarat_df_counts.index, y=istihbarat_df_counts['G'], text=istihbarat_df_counts['G'],
+                textposition='auto', marker=dict(color=colors_istihbaratChart[1]), hoverinfo='none')])
+istihbarat_bar_chart.update_layout(barmode='stack',legend=dict(yanchor="bottom",y=1.02, xanchor="left", x=0.5))
+col_down2.plotly_chart(istihbarat_bar_chart, use_container_width=True)
 
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
 with tabT:
     st.header("Tüzel Şirketler")
-    st.write("""Tüzel şirketlerin hem nakdi hem de gayri nakdi limit ve risklerini gözlemliyoruz. 
+    st.write("""Tüzel şirketlerin hem nakdi hem de gayri nakdi limit ve risklerini gözlemliyoruz.
             Nakit halinde olmayan her türlü kredi, gayri nakdi olarak sınıflandırılır. Teminat mektubu, çek karnesi bu gruptadır. Gayri nakdi krediler
             yalnızca şirketlere sunulurken nakdi krediler şirketlere ve şahıslara sunulur.
             """)
