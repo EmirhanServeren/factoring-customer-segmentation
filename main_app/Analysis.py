@@ -8,6 +8,8 @@ import numpy as np
 # importing to visualization where streamlit is not enough
 import matplotlib.pyplot as plt
 import plotly.express as px
+import plotly.graph_objects as go
+st.set_option('deprecation.showPyplotGlobalUse', False)    # to avoid warning message
 
 import pyodbc           # importing for connecting to database
 import json             # for reading the key inside the json formatted file
@@ -26,10 +28,20 @@ visualization_df = pd.read_sql(viz_query, cnxn)
 companyType_df = visualization_df[['MUSTERI_ID','SIRKET_TURU']]
 companyType_df = companyType_df.drop_duplicates()
 companyType_df = companyType_df['SIRKET_TURU'].value_counts()
+# define a dictionary to map original labels to renamed kişi tipi (T/G) labels
+companyType_label_mapping = {'T': 'Tüzel','G':'Gerçek'}
+companyType_df = companyType_df.rename(index=companyType_label_mapping)     # rename the labels using the mapping dictionary
 
 # create visualization for çek renk
 cek_color_df = visualization_df[['CEK_RENK']]
 cek_color_df = cek_color_df['CEK_RENK'].value_counts()
+# define a dictionary to map original labels to renamed çek renk labels
+cek_renk_label_mapping = {'Ayesil': 'Açık Yeşil','Yesil':'Yeşil','Asari': 'Açık Sarı','Sari':'Sarı',
+        'Turuncu':'Turuncu','Mor':'Mor','Kirmizi':'Kırmızı','Siyah':'Siyah'}
+cek_color_df = cek_color_df.rename(index=cek_renk_label_mapping)     # rename the labels using the mapping dictionary
+
+cek_renk_order = ['Açık Yeşil', 'Yeşil', 'Açık Sarı', 'Sarı', 'Turuncu', 'Mor', 'Kırmızı', 'Siyah']
+cek_color_df = cek_color_df.reindex(cek_renk_order)     # reindex the labels in the desired order by the list
 
 # count number of MUSTERI and KESIDECI-> printing as metric with streamlit
 customer_number = visualization_df[['MUSTERI_ID']]
@@ -42,22 +54,38 @@ kesideci_number = kesideci_number.drop_duplicates()     #kesideci_number.size
 # ...and make it a filter based on CEK_RENK
 istihbarat_df=visualization_df[['CEK_NO','SIRKET_TURU','CEK_RENK','ISTIHBARAT_SONUC']]
 istihbarat_df= istihbarat_df.drop_duplicates(subset='CEK_NO', keep="first")
-#istihbarat_df= istihbarat_df['ISTIHBARAT_SONUC'].value_counts()
 
-# VISUALIZATIONS-RELATED TO BK TAB (ŞAHIS TAB)
+# VISUALIZATIONS-RELATED TO BK TAB (Gerçek Kişiler TAB)
 # query related attributes by filtering SIRKET_TURU as G (şahıs)
 bk_query= """SELECT MUSTERI_ID, CEK_NO, BK_GECIKMEHESAP, 'BK_GECIKMEBAKIYE', BK_LIMIT, BK_RISK, BK_NOTU
                 FROM dbo.dataset WHERE SIRKET_TURU LIKE 'G' """
 visualization_bk_df = pd.read_sql(bk_query, cnxn)
 
 sample_bk=visualization_bk_df.sample(n=1000)
-# scatter the limit by risk
+# scatter the limit by risk for G type customers
 scatter_bklimitrisk = px.scatter(
     sample_bk[['BK_LIMIT','BK_RISK']],
     x="BK_LIMIT",
     y="BK_RISK",
 )
 
+# VISUALIZATIONS-RELATED TO TK TAB (Tüzel Kişiler TAB)
+# query related attributes by filtering SIRKET_TURU as G (şahıs)
+tk_query= """SELECT MUSTERI_ID, ID, CEK_NO, CEK_TUTAR, VADE_GUN, TK_NAKDILIMIT,
+            TK_NAKDIRISK, TK_GAYRINAKDILIMIT, TK_GAYRINAKDIRISK, TK_GECIKMEHESAP, TK_GECIKMEBAKIYE
+            FROM dbo.dataset WHERE SIRKET_TURU LIKE 'T' """
+
+visualization_tk_df = pd.read_sql(tk_query, cnxn)
+sample_tk=visualization_tk_df.sample(n=1000)
+
+# scatter the limit by risk for T type customers
+scatter_tk_nakdilimitrisk = px.scatter(
+    sample_tk[['TK_NAKDILIMIT','TK_NAKDIRISK']],
+    x="TK_NAKDILIMIT",
+    y="TK_NAKDIRISK",
+)
+
+#visualization_bk_df['MUSTERI_ID'].value_counts()      # to see the number of occurrence of each customers
 
 # ----------------------------------------------
 #   STARTING WEB-APP RELATED PARTS AFTER HERE
@@ -88,8 +116,12 @@ col_up1,col_up2,col_up3=st.columns(3, gap="large")
 # filling the containers
 col_up1.write(dummy_text)   # left column
 # middle column
-col_up2.subheader("Şirket Türüne göre Dağılımı")
-col_up2.bar_chart(companyType_df)
+col_up2.subheader("Şirket Türüne Göre Dağılım")
+figure_companyType = go.Figure(data=[go.Pie(labels=companyType_df.index, values=companyType_df.values)])       # create the donut chart
+figure_companyType.update_traces(hole=0.4)                                                # set the hole size for the donut chart (0.6 for a smaller hole)
+figure_companyType.update_layout(legend=dict(orientation="h", yanchor="bottom",
+                            y=1.02, xanchor="center", x=0.5))                             # adjust location of color legend for better visualization
+col_up2.plotly_chart(figure_companyType, use_container_width=True)                        # render the chart for streamlit
 # right column
 col_up3.metric(label="Verisetindeki girdi sayısı", value=str(visualization_df['MUSTERI_ID'].size))
 col_up3.metric(label="Verisetindeki müşteri sayısı", value=str(customer_number.size))
@@ -97,11 +129,14 @@ col_up3.metric(label="Verisetindeki keşideci sayısı", value=str(kesideci_numb
 
 # create another column containers of web page
 col_down1,col_down2=st.columns(2, gap="large")
-col_down1.subheader("Veri setindeki Çek Renklerinin Dağılımı")
-col_down1.bar_chart(cek_color_df)
+col_down1.subheader("Veri setindeki Çek Renkleri Sarı Ağırlıklı")
+cek_color_fig = go.Figure(data=[go.Bar(x=cek_color_df,y=cek_color_df.index,orientation='h')])    # creating the horizontal bar chart
+cek_color_fig.update_layout(xaxis_title="Çek Miktarı",yaxis_title="Çek Rengi")                          # set the chart axis labels
+col_down1.plotly_chart(cek_color_fig, use_container_width=True)                                         # render the chart for streamlit
+
 col_down1.write(" Çek rengi KKB tarafından bankalara aktarılan bir bilgidir. Açık Yeşilden Siyaha sıralanmıştır. Açık Yeşil kredibilitesi en yüksek çektir, siyaha geçtikçe çekin kredibilitesi düşmektedir.")
+
 col_down2.write(dummy_text)
-#cek_color_dropdown=col_down2.selectbox("çek rengi seçiniz",cek_color_df.index.tolist())
 col_down2.subheader("Çeklerin İstihbarat Sonuçları")
 col_down2.bar_chart(istihbarat_df['ISTIHBARAT_SONUC'].value_counts())
 
@@ -109,6 +144,11 @@ col_down2.bar_chart(istihbarat_df['ISTIHBARAT_SONUC'].value_counts())
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
 with tabT:
     st.header("Tüzel Şirketler")
+    st.write("""Tüzel şirketlerin hem nakdi hem de gayri nakdi limit ve risklerini gözlemliyoruz. 
+            Nakit halinde olmayan her türlü kredi, gayri nakdi olarak sınıflandırılır. Teminat mektubu, çek karnesi bu gruptadır. Gayri nakdi krediler
+            yalnızca şirketlere sunulurken nakdi krediler şirketlere ve şahıslara sunulur.
+            """)
+    st.plotly_chart(scatter_tk_nakdilimitrisk, theme=None, use_container_width=True)
     st.write(dummy_text)   # dummy text for now
 with tabG:
     st.header("Şahıs Şirketleri")
