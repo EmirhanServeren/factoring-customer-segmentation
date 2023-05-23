@@ -51,10 +51,13 @@ cek_color_df = cek_color_df.reindex(cek_renk_order)
 
 # count number of MUSTERI and KESIDECI-> printing as metric with streamlit
 customer_number = visualization_df[['MUSTERI_ID']]
-customer_number = customer_number.drop_duplicates()     #customer_number.size
+customer_number = customer_number.drop_duplicates()     # customer_number.size
 
 kesideci_number = visualization_df[['KESIDECI_ID']]
-kesideci_number = kesideci_number.drop_duplicates()                                 # kesideci_number.size
+kesideci_number = kesideci_number.drop_duplicates()     # kesideci_number.size
+
+cek_number = visualization_df[['CEK_NO']]
+cek_number = cek_number.drop_duplicates()               # cek_number.size
 
 # visualize "istihbarat sonucu"
 # ...and make it a filter based on CEK_RENK
@@ -94,6 +97,7 @@ tk_cektutar_df=visualization_tk_df[['CEK_NO', 'CEK_TUTAR', 'VADE_GUN']].drop_dup
 #   STARTING WEB-APP RELATED PARTS AFTER HERE
 # ----------------------------------------------
 
+
 st.header("Customer Reports-Analytics")     # create header for page
 
 # create sidebar and other sub-page components here
@@ -132,6 +136,7 @@ col_up2.plotly_chart(figure_companyType, use_container_width=True)              
 col_up3.metric(label="Verisetindeki girdi sayısı", value=str(visualization_df['MUSTERI_ID'].size))
 col_up3.metric(label="Verisetindeki müşteri sayısı", value=str(customer_number.size))
 col_up3.metric(label="Verisetindeki keşideci sayısı", value=str(kesideci_number.size))
+col_up3.metric(label="Verisetindeki çek sayısı", value=str(cek_number.size))
 col_up3.write("Loren ipsum dolor sit amet. Loren ipsum dolor sit amet. Loren ipsum dolor sit amet.")
 
 # create another column containers of web page
@@ -159,9 +164,18 @@ istihbarat_bar_chart = go.Figure(data=[
 istihbarat_bar_chart.update_layout(barmode='stack',legend=dict(yanchor="bottom",y=1.02, xanchor="left", x=0.5))
 col_mid2.plotly_chart(istihbarat_bar_chart, use_container_width=True)
 
-col_down1,col_down2=st.columns(2, gap="large")
-col_down1.subheader("Firma, Müşterilerini Çoğunlukla En Düşük Risk Seviyesinde Sınıflandırmış")
-col_down1.bar_chart(riskLevel_df)                         # render the bar chart of risk level for streamlit
+col_down1,col_down2, col_down3 =st.columns(3, gap="large")
+col_down1.write("Çek renklerinde kredibilitesi düşük çek renklerin ve ayrıca çek onlaylarında red durumundaki çek oranının yüksek olduğunu gözlemliyoruz.")
+# oto-red ratio is calculated here
+oto_red_count = istihbarat_df_counts.loc['RED']['T'] + istihbarat_df_counts.loc['RED']['G']
+col_down1.metric(label="Oto Red Oranı", value=str(round(oto_red_count/cek_number.size*100, 2))+"%")
+# siyah çek color count metric here
+#black_cek_count = cek_color_df.loc['Siyah']
+#col_down1.metric(label="Siyah Çek Oranı", value=str(round(black_cek_count/cek_number.size*100, 2))+"%")
+col_down1.write("Bu durumun firma tarafından belirlenen müşteri risk seviyesiyle ne kadar örtüştüğünü görmek için yandaki grafikte müşterilerin risk seviyelerine göre dağılımını gözlemliyoruz.")
+
+col_down2.subheader("Firma, Müşterilerini Çoğunlukla En Düşük Risk Seviyesinde Sınıflandırmış")
+col_down2.bar_chart(riskLevel_df)                         # render the bar chart of risk level for streamlit
 
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
@@ -187,9 +201,12 @@ with tabT:
     scatter_tk_nakdilimitrisk = go.Figure(data=scatter_trace, layout=layout)
     st.plotly_chart(scatter_tk_nakdilimitrisk, theme=None, use_container_width=True)
 
-    st.bar_chart(tk_cektutar_df['VADE_GUN'].value_counts(), use_container_width=True)
+    st.bar_chart(tk_cektutar_df['VADE_GUN'].value_counts().sort_values(ascending=True), use_container_width=True)
 
 with tabG:
     st.header("Şahıs Şirketleri")
+
+    scatter_bklimitrisk.update_layout(xaxis=dict(showgrid=False, showticklabels=False))
     st.plotly_chart(scatter_bklimitrisk, theme=None, use_container_width=True)
+
     st.write(dummy_text)
