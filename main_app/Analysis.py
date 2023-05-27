@@ -27,7 +27,7 @@ visualization_df = pd.read_sql(viz_query, cnxn)
 
 # create visualization for risk seviyesi
 riskLevel_df = visualization_df[['MUSTERI_ID','MUSTERI_RISK_SEVIYESI']]
-riskLevel_df = riskLevel_df.drop_duplicates(subset='MUSTERI_ID', keep='first')      # drop duplicate IDs to count 
+riskLevel_df = riskLevel_df.drop_duplicates(subset='MUSTERI_ID', keep='first')      # drop duplicate IDs to count
 riskLevel_df = riskLevel_df['MUSTERI_RISK_SEVIYESI'].value_counts()
 
 # create visualization for T/G type of companies
