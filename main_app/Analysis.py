@@ -71,13 +71,15 @@ bk_query= """SELECT MUSTERI_ID, CEK_NO, BK_GECIKMEHESAP, CEK_TUTAR, VADE_GUN,
                 FROM dbo.dataset WHERE SIRKET_TURU LIKE 'G' """
 visualization_bk_df = pd.read_sql(bk_query, cnxn)
 
-sample_bk=visualization_bk_df.sample(n=2000)    # there is envy amount of data so using a sample
+"""
+sample_bk=visualization_bk_df.sample(n=1000)    # there is envy amount of data so using a sample
 # scatter the limit by risk for G type customers
 scatter_bklimitrisk = px.scatter(
     sample_bk[['BK_LIMIT','BK_RISK']],
     x="BK_LIMIT",
     y="BK_RISK",
 )
+"""
 
 # VISUALIZATIONS-RELATED TO TK TAB (Tüzel Kişiler TAB)
 # query related attributes by filtering SIRKET_TURU as G (şahıs)
@@ -86,7 +88,7 @@ tk_query= """SELECT MUSTERI_ID, ID, CEK_NO, CEK_TUTAR, VADE_GUN, TK_NAKDILIMIT,
             FROM dbo.dataset WHERE SIRKET_TURU LIKE 'T' """
 visualization_tk_df = pd.read_sql(tk_query, cnxn)
 
-sample_tk=visualization_tk_df.sample(n=2000)    # there is envy amount of data so using a sample
+#sample_tk=visualization_tk_df.sample(n=1000)    # there is envy amount of data so using a sample
 
 # to see the number of occurrence of each customers for each customer type
 bk_cektutar_df=visualization_bk_df[['CEK_NO', 'CEK_TUTAR', 'VADE_GUN']].drop_duplicates(subset='CEK_NO', keep="first")
@@ -177,14 +179,12 @@ col_down1.write("Bu durumun firma tarafından belirlenen müşteri risk seviyesi
 col_down2.subheader("Firma, Müşterilerini Çoğunlukla En Düşük Risk Seviyesinde Sınıflandırmış")
 col_down2.bar_chart(riskLevel_df)                         # render the bar chart of risk level for streamlit
 
+"""
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
 with tabT:
     st.header("Tüzel Şirketler")
-    st.write("""Tüzel şirketlerin hem nakdi hem de gayri nakdi limit ve risklerini gözlemliyoruz.
-            Nakit halinde olmayan her türlü kredi, gayri nakdi olarak sınıflandırılır. Teminat mektubu, çek karnesi bu gruptadır. Gayri nakdi krediler
-            yalnızca şirketlere sunulurken nakdi krediler şirketlere ve şahıslara sunulur.
-            """)
+    st.write('Tüzel şirketlerin hem nakdi hem de gayri nakdi limit ve risklerini gözlemliyoruz.Nakit halinde olmayan her türlü kredi, gayri nakdi olarak sınıflandırılır. Teminat mektubu, çek karnesi bu gruptadır. Gayri nakdi kredileryalnızca şirketlere sunulurken nakdi krediler şirketlere ve şahıslara sunulur.')
     # creating scatter plot for TK_NAKDILIMIT and TK_NAKDIRISK here
     scatter_trace = go.Scatter(x=sample_tk['TK_NAKDILIMIT'],y=sample_tk['TK_NAKDIRISK'],
     mode='markers',hovertemplate='Müşterinin Tüzel Nakdi Limiti %{x} ve Tüzel Nakdi Riski %{y} <extra></extra>')
@@ -210,3 +210,4 @@ with tabG:
     st.plotly_chart(scatter_bklimitrisk, theme=None, use_container_width=True)
 
     st.write(dummy_text)
+"""
