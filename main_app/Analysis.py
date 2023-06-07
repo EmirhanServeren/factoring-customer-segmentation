@@ -22,7 +22,7 @@ cnxn = pyodbc.connect(sql_key['key'])       # establish a connection
 crsr = cnxn.cursor()                        # cursor enables to send command
 
 # query for selecting necessary columns
-viz_query= """SELECT MUSTERI_ID, KESIDECI_ID, CEK_NO, SIRKET_TURU, CEK_TUTAR, CEK_RENK, ISTIHBARAT_SONUC, MUSTERI_RISK_SEVIYESI FROM dbo.dataset """
+viz_query= """SELECT MUSTERI_ID, KESIDECI_ID, CEK_NO, SIRKET_TURU, CEK_TUTAR, CEK_RENK, ISTIHBARAT_SONUC, MUSTERI_RISK_SEVIYESI FROM dataset """
 visualization_df = pd.read_sql(viz_query, cnxn)
 
 # create visualization for risk seviyesi
@@ -66,12 +66,11 @@ istihbarat_df= istihbarat_df.drop_duplicates(subset='CEK_NO', keep="first")     
 
 # VISUALIZATIONS-RELATED TO BK TAB (Gerçek Kişiler TAB)
 # query related attributes by filtering SIRKET_TURU as G (şahıs)
-bk_query= """SELECT MUSTERI_ID, CEK_NO, BK_GECIKMEHESAP, CEK_TUTAR, VADE_GUN,
-                'BK_GECIKMEBAKIYE', BK_LIMIT, BK_RISK, BK_NOTU
-                FROM dbo.dataset WHERE SIRKET_TURU LIKE 'G' """
+bk_query= """SELECT MUSTERI_ID, CEK_NO, BK_GECIKMEHESAP, CEK_TUTAR,
+            BK_GECIKMEBAKIYE, BK_LIMIT, BK_RISK, BK_NOTU
+            FROM dataset WHERE SIRKET_TURU LIKE 'G' """
 visualization_bk_df = pd.read_sql(bk_query, cnxn)
 
-"""
 sample_bk=visualization_bk_df.sample(n=1000)    # there is envy amount of data so using a sample
 # scatter the limit by risk for G type customers
 scatter_bklimitrisk = px.scatter(
@@ -79,16 +78,15 @@ scatter_bklimitrisk = px.scatter(
     x="BK_LIMIT",
     y="BK_RISK",
 )
-"""
 
 # VISUALIZATIONS-RELATED TO TK TAB (Tüzel Kişiler TAB)
 # query related attributes by filtering SIRKET_TURU as G (şahıs)
-tk_query= """SELECT MUSTERI_ID, ID, CEK_NO, CEK_TUTAR, VADE_GUN, TK_NAKDILIMIT,
+tk_query= """SELECT MUSTERI_ID, ID, CEK_NO, CEK_TUTAR, TK_NAKDILIMIT,
             TK_NAKDIRISK, TK_GAYRINAKDILIMIT, TK_GAYRINAKDIRISK, TK_GECIKMEHESAP, TK_GECIKMEBAKIYE
-            FROM dbo.dataset WHERE SIRKET_TURU LIKE 'T' """
+            FROM dataset WHERE SIRKET_TURU LIKE 'T' """
 visualization_tk_df = pd.read_sql(tk_query, cnxn)
 
-#sample_tk=visualization_tk_df.sample(n=1000)    # there is envy amount of data so using a sample
+sample_tk=visualization_tk_df.sample(n=1000)    # there is envy amount of data so using a sample
 
 # to see the number of occurrence of each customers for each customer type
 bk_cektutar_df=visualization_bk_df[['CEK_NO', 'CEK_TUTAR', 'VADE_GUN']].drop_duplicates(subset='CEK_NO', keep="first")
@@ -179,7 +177,6 @@ col_down1.write("Bu durumun firma tarafından belirlenen müşteri risk seviyesi
 col_down2.subheader("Firma, Müşterilerini Çoğunlukla En Düşük Risk Seviyesinde Sınıflandırmış")
 col_down2.bar_chart(riskLevel_df)                         # render the bar chart of risk level for streamlit
 
-"""
 # creating tabs to navigate between charts of SIRKET_TURU T and G
 tabT, tabG = st.tabs(["Tüzel Şirketler", "Şahıs Şirketleri"])
 with tabT:
@@ -208,6 +205,3 @@ with tabG:
 
     scatter_bklimitrisk.update_layout(xaxis=dict(showgrid=False, showticklabels=False))
     st.plotly_chart(scatter_bklimitrisk, theme=None, use_container_width=True)
-
-    st.write(dummy_text)
-"""
