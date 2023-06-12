@@ -7,3 +7,5 @@ The capstone project homework implementation process is going to be tracked and 
 *   Emirhan Serveren
 *   Mert Oğuz 
 *   Oğuz Alp Özçelik
+
+The streamlit app is deployed to present segmentation. Visit the app [via clicking the link](https://factoringsegmentation.streamlit.app/)
