@@ -15,13 +15,11 @@ import calendar
 # rename page name and set layout wider
 st.set_page_config(page_title="Analytics Reporting",layout="wide")
 
-# rename the page names in the sidebar
-#...
-
 # create a header for web page
 st.markdown("<h1 style='font-style: italic;'>Know Your Customers. Lead Your Business.</h1>",unsafe_allow_html=True)
 # add a text under header
-st.markdown("<p style='color: #FF8585; font-size: 18px;'>Move forward with accurate decisions on the factoring business. Make data-oriented decisions for success. Learn insight into your customers. Discover facts.</p>", unsafe_allow_html=True)
+st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: bold'>Move forward with accurate decisions on the factoring business. Make data-oriented decisions for success. Learn insight into your customers. Discover facts.</p>", unsafe_allow_html=True)
+
 # create sidebar and other sub-page components here
 st.sidebar.title("Customer Segmentation Capstone Project Web-App")
 st.sidebar.write("Project by ENM and CMP students. Cansu Can, Derya Ekin Dereci, Eda Merduman from ENM Team and Emirhan Serveren, Mert Oğuz, Oğuz Alp Özçelik from CMP Team")
@@ -59,8 +57,12 @@ figure_companyType.update_layout(legend=dict(orientation="h", yanchor="bottom",
 col_up2.plotly_chart(figure_companyType, use_container_width=True)
 
 # fill right container with metrics
-
-# ...
+metrics = pd.read_feather('streamlit_view/metrics.feather')
+col_up3.metric(label="Total Transactions", value=str(metrics['ID'].nunique()))
+col_up3.metric(label="Number of Customers Worked With", value=str(metrics['MUSTERI_ID'].nunique()))
+col_up3.metric(label="Number of Drawer that Customers Worked With", value=str(metrics['KESIDECI_ID'].nunique()))
+col_up3.metric(label="Total Number of Checks", value=str(metrics['CEK_NO'].nunique()))
+col_up3.metric(label="Number of Branches that Checks Operated", value=str(metrics['SUBE'].nunique()))
 
 # create column containers of web page
 # load the transaction history data
