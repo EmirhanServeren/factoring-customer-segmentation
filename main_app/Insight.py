@@ -27,7 +27,7 @@ st.sidebar.title("Customer Segmentation Capstone Project Web-App")
 st.sidebar.write("Project by ENM and CMP students. Cansu Can, Derya Ekin Dereci, Eda Merduman from ENM Team and Emirhan Serveren, Mert Oğuz, Oğuz Alp Özçelik from CMP Team")
 
 # create column containers of web page
-col_up1,col_up2,col_up3=st.columns(3, gap="large")
+col_up1,col_up2,col_up3=st.columns(3)
 
 # fill left container with text
 col_up1_markdown_text = """The factoring company has an extensive customer portfolio. We examine them based on their **characteristic behaviors**. 
@@ -88,7 +88,7 @@ transaction_history_line.update_traces(hovertemplate="There are %{y} records on 
 # render the line chart
 st.plotly_chart(transaction_history_line, use_container_width=True)
 
-col_mid1, col_mid2 = st.columns(2, gap="large")
+col_mid1, col_mid2 = st.columns(2)
 
 # will fill these containers with charts
 # ...
