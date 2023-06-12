@@ -88,4 +88,7 @@ transaction_history_line.update_traces(hovertemplate="There are %{y} records on 
 # render the line chart
 st.plotly_chart(transaction_history_line, use_container_width=True)
 
+col_mid1, col_mid2 = st.columns(2, gap="large")
 
+# will fill these containers with charts
+# ...
