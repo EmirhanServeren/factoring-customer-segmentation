@@ -64,16 +64,22 @@ col_up3.metric(label="Number of Drawer that Customers Worked With", value=str(me
 col_up3.metric(label="Total Number of Checks", value=str(metrics['CEK_NO'].nunique()))
 col_up3.metric(label="Number of Branches that Checks Operated", value=str(metrics['SUBE'].nunique()))
 
-# create column containers of web page
+# create column container of web page
+
 # load the transaction history data
 transaction_history = pd.read_feather('streamlit_view/transaction_history.feather')
 # extract month-year values for the date filter based on months
 transaction_history['MonthYear'] = transaction_history['ISLEM_TARIHI'].dt.to_period('M')
 unique_months = transaction_history['MonthYear'].unique()
-# creating a date filter for the transaction history
+
+# creating a date filter for the transaction history using a select box (dropdown) component
 selectbox_options = ['Whole Time Period'] + [month.strftime('%B') for month in unique_months]
-selected_month = st.selectbox('You can observe check transaction dates from the chart below. Also, you are able to select a month ', 
-                selectbox_options)
+selected_month = st.selectbox(' ',selectbox_options)
+
+# create header over the chart
+st.subheader("Transactions have regular pattern except two days")
+st.write("These two days are the first day of Bayram in Turkey. That's why they are days with the lowest transactions. You can observe check transaction dates from the chart below. Also, you are able to select a month")
+
 # filter the transaction history based on the selected month
 if selected_month == 'Whole Time Period': filtered_data = transaction_history     # for the case all months are considered
 else:
@@ -90,7 +96,27 @@ transaction_history_line.update_traces(hovertemplate="There are %{y} records on 
 # render the line chart
 st.plotly_chart(transaction_history_line, use_container_width=True)
 
+# adding two new containers for the next section
 col_mid1, col_mid2 = st.columns(2)
 
-# will fill these containers with charts
-# ...
+# create a bar chart for customer frequency on the left container
+customer_frequency = pd.read_feather('streamlit_view/customer_frequency.feather')       # load the view data
+
+# add header amd context first
+col_mid1.subheader("Customers Come At Least Once in a Month or Only for Once ", anchor='center')
+
+# then the radio button as the filter
+sirket_turu_list = [str(item) for item in customer_frequency['SIRKET_TURU']]    # convert 'StringArray' column to a regular Python list to add the values into filter
+sirket_turu_list = list(dict.fromkeys(sirket_turu_list))                                # drop duplicate values and keep only one from each
+filtered_sirket = col_mid1.radio("Filter by Company Type to Observe Changes on Frequency!", ['All'] + sirket_turu_list)         # filter by company type value
+if filtered_sirket != 'All':customer_frequency = customer_frequency[customer_frequency['SIRKET_TURU'] == filtered_sirket]
+
+# calculate count of unique customers for each transactions frequency value to visualize in the chart
+freq_counts = customer_frequency.groupby('TRANSACTIONS_FREQ')['MUSTERI_ID'].nunique().reset_index()
+# visualize as a bar chart
+transaction_freq_fig = go.Figure(data=go.Bar(x=freq_counts['MUSTERI_ID'],y=freq_counts['TRANSACTIONS_FREQ'],
+        orientation='h',marker=dict(color='yellow'),text=freq_counts['MUSTERI_ID'],textposition='inside'))
+# customize the layout
+transaction_freq_fig.update_layout(xaxis_title='Unique Customer Count',yaxis_title='Transactions Frequency')
+
+col_mid1.plotly_chart(transaction_freq_fig, use_container_width=True)    # render the bar chart
