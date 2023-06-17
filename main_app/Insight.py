@@ -168,8 +168,8 @@ companies_KV_KY.index=['Check Usage Denied','Usage Verified']    # rename index 
 # visualize KV/KY count as a donut chart
 figure_company_KV_KY = go.Figure(data=[go.Pie(labels=companies_KV_KY.index,
         values=companies_KV_KY.values)])                # create a donut chart
-figure_company_KV_KY.update_traces(hole=0.4)            # set the hole size for the donut chart
-figure_company_KV_KY.update_traces(marker=dict(colors=['#FF1F1F','#1FFF5E']))   # visualize KV with yellow and KY with red
+figure_company_KV_KY.update_traces(hole=0.4, hovertemplate=None, hoverinfo='skip')    # set the hole size for the donut chart
+figure_company_KV_KY.update_traces(marker=dict(colors=['#FF1F1F','#1FFF5E']))     # visualize KV with yellow and KY with red
 # render the donut chart
 col_down2.plotly_chart(figure_company_KV_KY, use_container_width=True)
 
