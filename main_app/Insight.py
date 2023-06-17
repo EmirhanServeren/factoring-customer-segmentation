@@ -18,7 +18,7 @@ st.set_page_config(page_title="Analytics Reporting",layout="wide")
 # create a header for web page
 st.markdown("<h1 style='font-style: italic;'>Know Your Customers. Lead Your Business.</h1>",unsafe_allow_html=True)
 # add a text under header
-st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: bold'>Move forward with accurate decisions on the factoring business. Make data-oriented decisions for success. Learn insight into your customers. Discover facts.</p>", unsafe_allow_html=True)
+st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: italic'>Move forward with accurate decisions on the factoring business. Make data-oriented decisions for success. Learn insight into your customers. Discover facts.</p>", unsafe_allow_html=True)
 
 # create sidebar and other sub-page components here
 st.sidebar.title("Customer Segmentation Capstone Project Web-App")
@@ -69,6 +69,11 @@ col_up3.metric(label="Total Number of Checks", value=str(metrics['CEK_NO'].nuniq
 col_up3.metric(label="Number of Branches that Checks Operated", value=str(metrics['SUBE'].nunique()))
 
 # creating a visualization over a column
+
+# create a header for the column
+st.markdown("<h2 style='font-style: italic;'>Manage Your Customer Portfolio. Dive Into Your Greatest Asset. Time.</h2>",unsafe_allow_html=True)
+# add a text under header
+st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: italic'>We provide insight into your relationships with your customers. By deriving new features using transaction dates, we create powerful analytics.</p>", unsafe_allow_html=True)
 
 # load the transaction history data
 transaction_history = pd.read_feather('streamlit_view/transaction_history.feather')
@@ -135,7 +140,7 @@ col_mid1.plotly_chart(transaction_freq_fig, use_container_width=True)
 # create a line chart that represents distribution of the last transaction dates of the customers
 last_transact = pd.read_feather('streamlit_view/last_transaction.feather')   # load the view data
 # the context over the chart
-last_transact_context="<p style='color: #4FFFE4; font-size: 16px; font-style: bold'>We keep track of our customers' frequency. This provides us to create a pattern about their risk. It is crucial to know their last visit as well to improve the pattern.This provides us to create a pattern about their risk. It is crucial to know their last visit as well to improve the pattern.</p>"
+last_transact_context="<p style='color: #4FFFE4; font-size: 16px; font-style: bold'>We keep track of our customers' frequency. This provides us to create a pattern about their risk. It is crucial to know their last visit as well to improve the pattern. </p>"
 col_mid2.markdown(last_transact_context, unsafe_allow_html=True)
 # and a headliner under the context
 col_mid2.subheader("Most of the Customers Visited in the Last 30 Days")
@@ -144,9 +149,29 @@ col_mid2.subheader("Most of the Customers Visited in the Last 30 Days")
 last_transact_fig = px.line(last_transact.value_counts('DAYS_SINCE_LAST_TRANSACTION').sort_index(ascending=True))
 last_transact_fig.update_layout(xaxis_title='Days Since Last Transaction',yaxis_title='Number of Customers',
                 showlegend=False)
-last_transact_fig.update_traces(line=dict(color='#FF5C5C'))
+last_transact_fig.update_traces(line=dict(color='#FF5C5C'), hovertemplate=None, hoverinfo='skip')
 # render the line chart
 col_mid2.plotly_chart(last_transact_fig, use_container_width=True)
+
+
+# before declaring these columns, create a header for the new section
+st.markdown("<h2 style='font-style: italic;'>Checks. Instruments of this Game.</h2>",unsafe_allow_html=True)
+# add a text under header
+st.markdown("<p style='color: #FF8585; font-style: italic; font-size: 18px;'>The check amount are already provided in data. However, not useful info without transforming it into meaningful result.</p>", unsafe_allow_html=True)
+
+# create two new columns for the next section
+col_down1, col_down2 = st.columns(2)
+
+companies_KV_KY = pd.read_feather('streamlit_view/companies_KV_KY_distribution.feather')   # load the view data
+companies_KV_KY = companies_KV_KY['KULLANDIRIM'].value_counts()                            # count the number of checks by KV/KY
+companies_KV_KY.index=['Check Usage Denied','Usage Verified']    # rename index values
+# visualize KV/KY count as a donut chart
+figure_company_KV_KY = go.Figure(data=[go.Pie(labels=companies_KV_KY.index,
+        values=companies_KV_KY.values)])                # create a donut chart
+figure_company_KV_KY.update_traces(hole=0.4)            # set the hole size for the donut chart
+figure_company_KV_KY.update_traces(marker=dict(colors=['#FF1F1F','#1FFF5E']))   # visualize KV with yellow and KY with red
+# render the donut chart
+col_down2.plotly_chart(figure_company_KV_KY, use_container_width=True)
 
 # creating tabs to navigate between charts of customer types
 tabT, tabG = st.tabs(["Tüzel", "Şahıs"])
