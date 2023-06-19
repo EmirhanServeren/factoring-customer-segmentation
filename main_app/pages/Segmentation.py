@@ -105,9 +105,9 @@ with tabT:
     # give a info under the header
     colup_1.markdown("""<p style='color: #FF8585; font-style: bold; font-size: 16px;'>Less number of segments generated then pre-defined labels
                 by the company. Optimized the distribution while reducing number of segments.</p>""", unsafe_allow_html=True)
-    # visualize here
+    # visualize donut chart here
     fig_tk_distribution = go.Figure(data=[go.Pie(labels=tk_cluster_distribution['Segment'],
-                    values=tk_cluster_distribution['count'])])
+                    values=tk_cluster_distribution['Count'])])
     # move legend to left of chart
     fig_tk_distribution.update_traces(hole=0.4, hovertemplate=None, hoverinfo='skip',marker=dict(colors=['#F6F314','#2CF5D5','#F50000']))
     fig_tk_distribution.update_layout(legend=dict(orientation="v",x=0,y=1,xanchor="left",yanchor="bottom"))
@@ -131,7 +131,7 @@ with tabT:
     column_1,column_2,column_3 = st.columns(3)
 
     # header declared first because it is over the chart
-    column_2.subheader("Reliable Segment has More Income and Less Loss from Checks")
+    """column_2.subheader("Reliable Segment has More Income and Less Loss from Checks")
     # check income-loss percentage chart which is on the left container
     tk_check_income = pd.read_feather("streamlit_view/tk_cluster_check_income.feather")
     # create the visualization below
@@ -144,5 +144,5 @@ with tabT:
     fig_tk_check_income.update_layout(xaxis_title=None,yaxis_title='Percentage (%)', barmode='stack')
     fig_tk_check_income.update_traces(hovertemplate=None, hoverinfo='skip')
     # render the chart
-    column_2.plotly_chart(fig_tk_check_income, use_container_width=True)
+    column_2.plotly_chart(fig_tk_check_income, use_container_width=True)"""
 
