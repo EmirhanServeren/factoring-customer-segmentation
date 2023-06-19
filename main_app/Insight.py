@@ -174,7 +174,7 @@ figure_company_KV_KY.update_traces(marker=dict(colors=['#FF1F1F','#1FFF5E']))   
 col_down2.plotly_chart(figure_company_KV_KY, use_container_width=True)
 
 # creating tabs to navigate between charts of customer types
-tabT, tabG = st.tabs(["Tüzel", "Şahıs"])
+tabG, tabT = st.tabs(["Şahıs", "Tüzel"])
 with tabT:
         st.markdown("<h2 style='font-style: italic;'>T Type Customers</h2>",unsafe_allow_html=True)
 
@@ -184,11 +184,11 @@ with tabT:
         # create a scatter plot chart for credit limit-risk
         tk_limitrisk = pd.read_feather('streamlit_view/tk_limit_risk_scatter.feather')  # Load T Type customer data
         if attribute == 'TK_NAKDILIMIT':
-         x_attr = 'TK_NAKDILIMIT'
-         y_attr = 'TK_NAKDIRISK'
+                x_attr = 'TK_NAKDILIMIT'
+                y_attr = 'TK_NAKDIRISK'
         else:
-         x_attr = 'TK_GAYRINAKDILIMIT'
-         y_attr = 'TK_GAYRINAKDIRISK'
+                x_attr = 'TK_GAYRINAKDILIMIT'
+                y_attr = 'TK_GAYRINAKDIRISK'
         sample_tk = tk_limitrisk.sample(1000)  # sample 1000 records to plot
         # visualize as a scatter chart
         scatter_tk = px.scatter(sample_tk, x=sample_tk[x_attr], y=sample_tk[y_attr])
