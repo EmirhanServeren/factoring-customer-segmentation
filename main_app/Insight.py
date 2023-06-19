@@ -178,6 +178,25 @@ tabT, tabG = st.tabs(["Tüzel", "Şahıs"])
 with tabT:
         st.markdown("<h2 style='font-style: italic;'>T Type Customers</h2>",unsafe_allow_html=True)
 
+        tabT1, tabT2 = st.columns(2)  # create two containers for the next section
+        attribute = tabT2.selectbox('Navigate between cash and non-cash credit distributions', ['TK_NAKDILIMIT', 'TK_GAYRINAKDILIMIT'])
+
+        # create a scatter plot chart for credit limit-risk
+        tk_limitrisk = pd.read_feather('streamlit_view/tk_limit_risk_scatter.feather')  # Load T Type customer data
+        if attribute == 'TK_NAKDILIMIT':
+         x_attr = 'TK_NAKDILIMIT'
+         y_attr = 'TK_NAKDIRISK'
+        else:
+         x_attr = 'TK_GAYRINAKDILIMIT'
+         y_attr = 'TK_GAYRINAKDIRISK'
+        sample_tk = tk_limitrisk.sample(1000)  # sample 1000 records to plot
+        # visualize as a scatter chart
+        scatter_tk = px.scatter(sample_tk, x=sample_tk[x_attr], y=sample_tk[y_attr])
+        scatter_tk.update_traces(hovertemplate=None, hoverinfo='skip')
+        scatter_tk.update_layout(xaxis_title="Credit Limit", yaxis_title="Credit Risk")
+        # render the scatter chart
+        tabT2.plotly_chart(scatter_tk, use_container_width=True)
+
 with tabG:
         st.markdown("<h2 style='font-style: italic;'>G Type Customers</h2>",unsafe_allow_html=True)
 
