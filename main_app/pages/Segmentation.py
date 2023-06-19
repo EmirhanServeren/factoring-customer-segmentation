@@ -55,8 +55,7 @@ with tabG:
     colup_1.markdown("""<p style='color: #FF8585; font-style: bold; font-size: 16px;'>Less number of segments generated then pre-defined labels
                 by the company. Optimized the distribution while reducing number of segments.</p>""", unsafe_allow_html=True)
     # visualize here
-    fig_bk_distribution = go.Figure(data=[go.Pie(labels=bk_cluster_distribution['Segment'],
-                    values=bk_cluster_distribution['Count'])])
+    fig_bk_distribution = go.Figure(data=[go.Pie(labels=bk_cluster_distribution['Segment'],values=bk_cluster_distribution['Count'])])
     # move legend to left of chart
     fig_bk_distribution.update_traces(hole=0.4, hovertemplate=None, hoverinfo='skip',marker=dict(colors=['#F6F314','#2CF5D5','#F50000']))
     fig_bk_distribution.update_layout(legend=dict(orientation="v",x=0,y=1,xanchor="left",yanchor="bottom"))
