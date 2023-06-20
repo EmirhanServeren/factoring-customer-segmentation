@@ -24,6 +24,20 @@ st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: italic'>Move
 st.sidebar.title("Customer Segmentation Capstone Project Web-App")
 st.sidebar.write("Project by ENM and CMP students. Cansu Can, Derya Ekin Dereci, Eda Merduman from ENM Team and Emirhan Serveren, Mert Oğuz, Oğuz Alp Özçelik from CMP Team")
 
+# create a header for the first section column that makes overview of sector
+st.markdown("<h2 style='font-style: italic;'>Understanding Business Flow. </h2>",unsafe_allow_html=True)
+# add a text under header
+st.markdown("<p style='color: #FFFF00; font-size: 18px; font-style: italic'>Crucial to understand the story of business to understand the story of data.</p>", unsafe_allow_html=True)
+
+# very first two containers for to add PNGs
+col_first1,col_first2=st.columns(2)
+# add a PNG to the first container
+col_first1.image('cluster_result_vizzes\\business_flow.jpeg',use_column_width=True)
+col_first2.image('cluster_result_vizzes\\business_actors.jpeg',use_column_width=True)
+
+
+# create a header for the next section column that makes overview of data
+st.markdown("<h2 style='font-style: italic;'>Meet With Your Customers. </h2>",unsafe_allow_html=True)
 # create column containers of web page
 col_up1,col_up2,col_up3=st.columns(3)
 
