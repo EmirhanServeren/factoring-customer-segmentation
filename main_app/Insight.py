@@ -19,6 +19,7 @@ st.set_page_config(page_title="Analytics Reporting",layout="wide")
 st.markdown("<h1 style='font-style: italic;'>Know Your Customers. Lead Your Business.</h1>",unsafe_allow_html=True)
 # add a text under header
 st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: italic'>Move forward with accurate decisions on the factoring business. Make data-oriented decisions for success. Learn insight into your customers. Discover facts.</p>", unsafe_allow_html=True)
+st.markdown("***")
 
 # create sidebar and other sub-page components here
 st.sidebar.title("Customer Segmentation Capstone Project Web-App")
@@ -33,7 +34,7 @@ col_first1,col_first2=st.columns(2)
 # read PNGs from an extrenal link because have an error on prod env
 col_first1.image('https://www.linkpicture.com/q/business_flow.jpeg',use_column_width=True)
 col_first2.image('https://www.linkpicture.com/q/business_actors.jpeg',use_column_width=True)
-
+st.markdown("***")
 
 # create a header for the next section column that makes overview of data
 st.markdown("<h2 style='font-style: italic;'>Meet With Your Customers. </h2>",unsafe_allow_html=True)
@@ -82,6 +83,7 @@ col_up3.metric(label="Number of Drawer that Customers Worked With", value=str(me
 col_up3.metric(label="Total Number of Checks", value=str(metrics['CEK_NO'].nunique()))
 col_up3.metric(label="Number of Branches that Checks Operated", value=str(metrics['SUBE'].nunique()))
 
+st.markdown("***")
 
 # create a header for the next section column
 st.markdown("<h2 style='font-style: italic;'>Manage Your Customer Portfolio. Dive Into Your Greatest Asset. Time.</h2>",unsafe_allow_html=True)
@@ -158,6 +160,7 @@ last_transact_fig.update_traces(line=dict(color='#FF5C5C'), hovertemplate=None, 
 # render the line chart
 col_mid2.plotly_chart(last_transact_fig, use_container_width=True)
 
+st.markdown("***")
 
 # before declaring these columns, create a header for the new section
 st.markdown("<h2 style='font-style: italic;'>Checks. Instruments of this Game.</h2>",unsafe_allow_html=True)

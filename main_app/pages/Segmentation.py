@@ -18,6 +18,8 @@ st.markdown("<h1 style='font-style: italic;'>Data-Oriented Perspective. Provides
 # add a text under header
 st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: bold'>Observe our Customer Segmentation model. Powered with Business Intelligence. Create rapid and smart strategies for your customers. </p>", unsafe_allow_html=True)
 
+st.markdown("***")
+
 # create sidebar and other sub-page components here
 st.sidebar.title("Customer Segmentation Capstone Project Web-App")
 st.sidebar.write("Project by ENM and CMP students. Cansu Can, Derya Ekin Dereci, Eda Merduman from ENM Team and Emirhan Serveren, Mert Oğuz, Oğuz Alp Özçelik from CMP Team")
@@ -132,6 +134,8 @@ coldown_G2.markdown("✅ **Optimised Traditional and Digital Channel Usage**")
 coldown_G2.markdown("✅ **Customer Interaction & Taking Feedbacks**")
 coldown_G2.markdown("✅ **Customer Gain & Loyalty**")
 coldown_G2.markdown("✅ **Relationship Building**")
+
+st.markdown("***")
 
 # create a header for the column
 st.markdown("<h2 style='font-style: italic;'>T Type Customers are Mostly Reliable</h2>",unsafe_allow_html=True)
