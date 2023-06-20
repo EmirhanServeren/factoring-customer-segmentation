@@ -58,7 +58,7 @@ col_up1.markdown(highlighted_text2_col_up1, unsafe_allow_html=True)
 
 # fill middle container with chart
 col_up2.subheader("There are G Type Customers Most Often", anchor='center')
-col_up2.markdown("**Excess of G Type Customers are not preffered** in factoring business most of times.")
+col_up2.markdown("**Excess of G Type Customers are not preferred** in factoring business most of times.")
 # read the data from feather file and process
 company_type_df=pd.read_feather('streamlit_view/company_type_distribution.feather')
 # process data for visualization
@@ -205,7 +205,7 @@ with tabT:
         tabT1, tabT2 = st.columns(2)  # create two containers for the next section
 
         # header over the navigation tab
-        tabT1.markdown("<h2 style='font-style: italic;'>G Type Customers</h2>",unsafe_allow_html=True)
+        tabT1.markdown("<h2 style='font-style: italic;'>T Type Customers</h2>",unsafe_allow_html=True)
 
         # denoted the context next to the chart
         tabT1.markdown("""<p style='color: #FFFF00; font-style: bold; font-size: 18px;'>The T Type Customers
