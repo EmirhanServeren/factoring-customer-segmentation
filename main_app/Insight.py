@@ -69,16 +69,14 @@ col_up3.metric(label="Number of Drawer that Customers Worked With", value=str(me
 col_up3.metric(label="Total Number of Checks", value=str(metrics['CEK_NO'].nunique()))
 col_up3.metric(label="Number of Branches that Checks Operated", value=str(metrics['SUBE'].nunique()))
 
-# creating a visualization over a column
 
-# create a header for the column
+# create a header for the next section column
 st.markdown("<h2 style='font-style: italic;'>Manage Your Customer Portfolio. Dive Into Your Greatest Asset. Time.</h2>",unsafe_allow_html=True)
 # add a text under header
 st.markdown("<p style='color: #FF8585; font-size: 18px; font-style: italic'>We provide insight into your relationships with your customers. By deriving new features using transaction dates, we create powerful analytics.</p>", unsafe_allow_html=True)
 
 # load the transaction history data
 transaction_history = pd.read_feather('streamlit_view/transaction_history.feather')
-
 # create header over the chart
 st.subheader("Transactions have regular pattern except two days")
 st.markdown("**These two days are the first day of Bayram in Turkey.** That's why they are days with the lowest transactions. You can observe check transaction dates from the chart below. Also, you are able to select a month")
@@ -111,7 +109,6 @@ col_mid1, col_mid2 = st.columns(2)
 customer_frequency = pd.read_feather('streamlit_view/customer_frequency.feather')       # load the view data
 # add header and context first
 col_mid1.subheader("Customers are Mostly Monthly or One-Timer ", anchor='center')
-
 # changing values of the column to be more readable in the radio button filter
 customer_frequency['SIRKET_TURU'] = customer_frequency['SIRKET_TURU'].replace(['G','T'],['Gerçek','Tüzel'],regex=True)
 # then the radio button as the filter
@@ -120,13 +117,11 @@ sirket_turu_list = list(dict.fromkeys(sirket_turu_list))                        
 # create the radio button
 filtered_sirket = col_mid1.radio("T type customers mostly have monthly customers. G type generally has one-timer. Filter to Observe Changes!", ['All'] + sirket_turu_list, horizontal= True)         # filter by company type value
 if filtered_sirket != 'All':customer_frequency = customer_frequency[customer_frequency['SIRKET_TURU'] == filtered_sirket]
-
 # calculate count of unique customers for each transactions frequency value to visualize in the chart
 freq_counts = customer_frequency.groupby('TRANSACTIONS_FREQ')['MUSTERI_ID'].nunique().reset_index()
 # replace the labels in the frequency column with the customized labels
 label_mapping = {'One Timer': 'Only Visited Once','Rare': 'Rarely Visiting','Very Often': 'At Least Once a Month','Often':'Visiting in Every Three Months'}
 freq_counts['TRANSACTIONS_FREQ'] = freq_counts['TRANSACTIONS_FREQ'].replace(label_mapping)
-
 # visualize as a bar chart
 transaction_freq_fig = go.Figure(data=go.Bar(x=freq_counts['MUSTERI_ID'],y=freq_counts['TRANSACTIONS_FREQ'],
         orientation='h',marker=dict(color='yellow'),text=freq_counts['MUSTERI_ID'],textposition='auto'))
