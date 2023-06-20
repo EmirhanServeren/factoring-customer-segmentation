@@ -186,9 +186,23 @@ col_down2.plotly_chart(figure_company_KV_KY, use_container_width=True)
 # creating tabs to navigate between charts of customer types
 tabG, tabT = st.tabs(["Şahıs", "Tüzel"])
 with tabT:
-        st.markdown("<h2 style='font-style: italic;'>T Type Customers</h2>",unsafe_allow_html=True)
-
         tabT1, tabT2 = st.columns(2)  # create two containers for the next section
+
+        # header over the navigation tab
+        tabT1.markdown("<h2 style='font-style: italic;'>G Type Customers</h2>",unsafe_allow_html=True)
+
+        # denoted the context next to the chart
+        tabT1.markdown("""<p style='color: #FFFF00; font-style: bold; font-size: 18px;'>The T Type Customers
+                consideres corporations, comapnies and organizations.</p>""", unsafe_allow_html=True)
+        tabT1.markdown("""<p style='color: #FFFFFF; font-style: bold; font-size: 18px;'>These customers
+                are preferred customers on portfolio mostly.</p>""", unsafe_allow_html=True)
+        tabT1.markdown("""<p style='color: #FFFF00; font-style: bold; font-size: 18px;'>By seperating them, can
+                provide customized offers which fits their organization type.</p>""", unsafe_allow_html=True)
+        tabT1.markdown("""<p style='color: #FFFFFF; font-style: bold; font-size: 18px;'>They can get
+                both cash and non-cash type credits.</p>""", unsafe_allow_html=True)
+        tabT1.markdown("""<p style='color: #FFFF00; font-style: bold; font-size: 18px;'>Non-cash type credit
+                may be any non-cash meta that converted into valuable cash resource. Such as land registers and transport vehicles.</p>""", unsafe_allow_html=True)
+
         attribute = tabT2.selectbox('Navigate between cash and non-cash credit distributions', ['TK_NAKDILIMIT', 'TK_GAYRINAKDILIMIT'])
 
         # create a scatter plot chart for credit limit-risk
