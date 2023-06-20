@@ -108,4 +108,7 @@ colup_2.markdown("""<p style='color: #FF3333; font-style: bold; font-size: 18px;
 colup_2.markdown("""<p style='color: #FFFFFF; font-style: bold; font-size: 18px;'>Simply, reliable customers' checks are more
             preferable for the company.</p>""", unsafe_allow_html=True)
 
-
+# reading the excel file "TAM FAKTORING PLAN"
+df = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx')
+# display as a dataframe
+st.dataframe(df)
