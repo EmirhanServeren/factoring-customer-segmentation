@@ -108,7 +108,17 @@ colup_2.markdown("""<p style='color: #FF3333; font-style: bold; font-size: 18px;
 colup_2.markdown("""<p style='color: #FFFFFF; font-style: bold; font-size: 18px;'>Simply, reliable customers' checks are more
             preferable for the company.</p>""", unsafe_allow_html=True)
 
-# reading the excel file "TAM FAKTORING PLAN"
-df = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx')
-# display as a dataframe
+# Read the Excel file "TAM FAKTÖRİNG PLAN.xlsx"
+df_install = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx', sheet_name='App_Install', header=2)
+df_engagement = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx', sheet_name='App_Engagement', header=2)
+df_olo = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx', sheet_name='OLO', header=2)
+df_ao = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx', sheet_name='AO', header=2)
+
+# Concatenate the dataframes
+df = pd.concat([df_install, df_engagement, df_olo, df_ao])
+
+# Reset the index
+df.reset_index(drop=True, inplace=True)
+
+# Display the dataframe
 st.dataframe(df)
