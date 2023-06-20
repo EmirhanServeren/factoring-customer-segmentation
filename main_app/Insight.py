@@ -137,13 +137,12 @@ col_mid1.plotly_chart(transaction_freq_fig, use_container_width=True)
 
 # create a line chart that represents distribution of the last transaction dates of the customers
 last_transact = pd.read_feather('streamlit_view/last_transaction.feather')   # load the view data
-# the context over the chart
+# the context over the chart declared first
 last_transact_context="<p style='color: #4FFFE4; font-size: 16px; font-style: bold'>We keep track of our customers' frequency. This provides us to create a pattern about their risk. It is crucial to know their last visit as well to improve the pattern. </p>"
 col_mid2.markdown(last_transact_context, unsafe_allow_html=True)
 # and a headliner under the context
 col_mid2.subheader("Most of the Customers Visited in the Last 30 Days")
-
-# create a line chart for the last transaction dates on the right container
+# visualize the line chart for the last transaction dates on the right container
 last_transact_fig = px.line(last_transact.value_counts('DAYS_SINCE_LAST_TRANSACTION').sort_index(ascending=True))
 last_transact_fig.update_layout(xaxis_title='Days Since Last Transaction',yaxis_title='Number of Customers',
                 showlegend=False)
