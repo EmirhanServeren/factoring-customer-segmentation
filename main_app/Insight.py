@@ -30,9 +30,9 @@ st.markdown("<h2 style='font-style: italic;'>Understanding Business Flow. </h2>"
 st.markdown("<p style='color: #FFFF00; font-size: 18px; font-style: italic'>Crucial to understand the story of business to understand the story of data.</p>", unsafe_allow_html=True)
 # very first two containers for to add PNGs
 col_first1,col_first2=st.columns(2)
-# add a PNG to the first container
-#col_first1.image('cluster_result_vizzes\\business_flow.jpeg',use_column_width=True)
-#col_first2.image('cluster_result_vizzes\\business_actors.jpeg',use_column_width=True)
+# read PNGs from an extrenal link because have an error on prod env
+col_first1.image('https://www.linkpicture.com/q/business_flow.jpeg',use_column_width=True)
+col_first2.image('https://www.linkpicture.com/q/business_actors.jpeg',use_column_width=True)
 
 
 # create a header for the next section column that makes overview of data
