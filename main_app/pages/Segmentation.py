@@ -155,4 +155,7 @@ colup_2.markdown("""<p style='color: #FFFF00; font-style: bold; font-size: 18px;
 colup_2.markdown("""<p style='color: #FF3333; font-style: bold; font-size: 18px;'>Low-rated offers are going to be presented for most of the T type customers. Because they are mostly reliable.</p>""", unsafe_allow_html=True)
 colup_2.markdown("""<p style='color: #FFFFFF; font-style: bold; font-size: 18px;'>Simply, the importance of division of T and G type customers are better presented with the segmentation model.</p>""", unsafe_allow_html=True)
 
-
+# reading the excel file "TAM FAKTORING PLAN"
+df = pd.read_excel('data/TAM FAKTÖRİNG PLAN.xlsx')
+# display as a dataframe
+st.dataframe(df)
